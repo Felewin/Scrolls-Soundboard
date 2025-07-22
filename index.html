@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrolls Soundboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .soundboard-container {
+            width: 100%;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: repeat(8, 1fr);
+            gap: 8px;
+            padding: 60px 20px 20px 20px; /* Top padding for stop button */
+            max-width: 100vw;
+            max-height: 100vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .magic-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .scroll-button {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #f0f0f3, #cacaca);
+            box-shadow: 
+                12px 12px 24px #bebebe,
+                -12px -12px 24px #ffffff,
+                inset 2px 2px 5px rgba(255, 255, 255, 0.3),
+                inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                16px 16px 32px #bebebe,
+                -16px -16px 32px #ffffff,
+                inset 2px 2px 8px rgba(255, 255, 255, 0.4),
+                inset -2px -2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .scroll-button:active {
+            transform: translateY(1px);
+            box-shadow: 
+                8px 8px 16px #bebebe,
+                -8px -8px 16px #ffffff,
+                inset 4px 4px 8px rgba(0, 0, 0, 0.2),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.2);
+        }
+
+        .scroll-button.playing {
+            background: linear-gradient(145deg, #ff9a9e, #fecfef);
+            animation: pulse 1s infinite;
+        }
+
+        .stop-all-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #ff6b6b, #ee5a52);
+            color: white;
+            z-index: 1000;
+            border-radius: 50%;
+            min-height: 50px;
+        }
+
+        .stop-all-button:hover {
+            background: linear-gradient(145deg, #ff5252, #e53935);
+            transform: translateY(-2px);
+            box-shadow: 
+                8px 8px 16px #bebebe,
+                -8px -8px 16px #ffffff,
+                inset 2px 2px 8px rgba(255, 255, 255, 0.4),
+                inset -2px -2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .stop-all-button .scroll-title {
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            font-size: 8px;
+        }
+
+        .stop-all-button .scroll-emoji {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        /* Novice scroll styling */
+        .novice {
+            border: 3px solid #000000;
+        }
+
+        /* Magic school gradients */
+        .electromancy {
+            background: linear-gradient(90deg, #fbbf24, #f97316);
+        }
+
+        .pyromancy {
+            background: linear-gradient(90deg, #ef4444, #f97316);
+        }
+
+        .hydromancy {
+            background: linear-gradient(90deg, #0ea5e9, #06b6d4);
+        }
+
+        .druidry {
+            background: linear-gradient(90deg, #22c55e, #84cc16);
+        }
+
+        .chronomancy {
+            background: linear-gradient(90deg, #c0c0c0, #4a4a4a);
+        }
+
+        .translocation {
+            background: linear-gradient(90deg, #fce7f3, #be185d);
+        }
+
+        .illusion {
+            background: linear-gradient(90deg, #ddd6fe, #7c3aed);
+        }
+
+        .elevancy {
+            background: linear-gradient(90deg, #fbbf24, #f472b6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .scroll-emoji {
+            font-size: clamp(20px, 3vw, 32px);
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .scroll-title {
+            font-size: clamp(10px, 1.5vw, 14px);
+            font-weight: bold;
+            color: #4a4a4a;
+            text-align: center;
+            line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .soundboard-container {
+                padding: 60px 15px 15px 15px;
+                gap: 6px;
+            }
+            
+            .magic-row {
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .soundboard-container {
+                padding: 60px 10px 10px 10px;
+                gap: 4px;
+            }
+            
+            .magic-row {
+                gap: 4px;
+            }
+        }
+
+        /* Ensure grid fits within viewport */
+        @media (max-height: 600px) {
+            .soundboard-container {
+                padding: 60px 10px 10px 10px;
+                gap: 4px;
+            }
+
+            .magic-row {
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="soundboard-container" id="soundboard">
+        <!-- Buttons will be generated by JavaScript -->
+    </div>
+
+    <script>
+        class ScrollsSoundboard {
+            constructor() {
+                this.playingAudios = new Map(); // Track multiple playing sounds
+                this.buttons = [];
+                this.stopAllButton = null;
+                this.spellAudioFiles = new Map(); // Cache of available audio files per spell
+                this.lastPlayedFiles = new Map(); // Track last played file per spell
+                this.init();
+            }
+
+            async init() {
+                this.createButtons();
+                await this.scanAudioFiles();
+                this.setupEventListeners();
+            }
+
+            createButtons() {
+                const container = document.getElementById('soundboard');
+                
+                // Create stop all button first (positioned absolutely)
+                this.createStopAllButton();
+                
+                // Magic schools and their spells
+                const schoolSpells = {
+                    'electromancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
+                    'pyromancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
+                    'hydromancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
+                    'druidry': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
+                    'chronomancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
+                    'translocation': ['Summon Relic', 'Ethereal Net', 'Remanifestation', 'Spatial Swap', 'Telekinesis'],
+                    'illusion': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
+                    'elevancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder']
+                };
+
+                const schoolEmojis = {
+                    'electromancy': '⚡',
+                    'pyromancy': '🔥',
+                    'hydromancy': '💧',
+                    'druidry': '🌿',
+                    'chronomancy': '⏰',
+                    'translocation': '🌀',
+                    'illusion': '🔮',
+                    'elevancy': '✨'
+                };
+                
+                // Create 8 rows, each with 5 buttons for a magic school (40 total)
+                Object.entries(schoolSpells).forEach(([school, spells]) => {
+                    const row = document.createElement('div');
+                    row.className = `magic-row ${school}`;
+                    
+                    // Create 5 buttons for each row
+                    spells.forEach((spellName, i) => {
+                        const button = document.createElement('button');
+                        const isNovice = i === 0; // First button in each row is novice
+                        
+                        button.className = `scroll-button ${isNovice ? 'novice' : ''}`;
+                        button.dataset.school = school;
+                        button.dataset.spell = spellName;
+                        button.dataset.level = isNovice ? 'novice' : 'advanced';
+                        
+                        button.innerHTML = `
+                            <div class="scroll-emoji">${schoolEmojis[school]}</div>
+                            <div class="scroll-title">${spellName}</div>
+                        `;
+                        
+                        row.appendChild(button);
+                        this.buttons.push(button);
+                    });
+                    
+                    container.appendChild(row);
+                });
+            }
+
+            createStopAllButton() {
+                const stopButton = document.createElement('button');
+                stopButton.className = 'scroll-button stop-all-button';
+                stopButton.dataset.action = 'stop-all';
+                
+                stopButton.innerHTML = `
+                    <div class="scroll-emoji">🔇</div>
+                    <div class="scroll-title">Stop</div>
+                `;
+                
+                document.body.appendChild(stopButton);
+                this.stopAllButton = stopButton;
+            }
+
+            setupEventListeners() {
+                // Stop all button listener
+                this.stopAllButton.addEventListener('click', (e) => {
+                    this.stopAllSounds();
+                });
+
+                this.stopAllButton.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                });
+
+                // Sound buttons listeners
+                this.buttons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        this.playSound(button);
+                    });
+                    
+                    // Prevent context menu on long press (mobile)
+                    button.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                    });
+                });
+            }
+
+            stopAllSounds() {
+                // Stop all playing audios
+                this.playingAudios.forEach((audio, button) => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    button.classList.remove('playing');
+                });
+                
+                // Clear the playing audios map
+                this.playingAudios.clear();
+            }
+
+            async scanAudioFiles() {
+                // Audio file extensions to check
+                const extensions = ['ogg', 'mp3', 'wav'];
+                
+                // For placeholder spells, use the old placeholder system
+                const placeholderAudio = ['assets/audio/placeholder.ogg'];
+
+                // Populate spell audio files
+                for (const button of this.buttons) {
+                    const school = button.dataset.school;
+                    const spell = button.dataset.spell;
+                    const spellKey = `${school}-${spell}`;
+
+                    if (school === 'translocation' && spell !== 'Placeholder') {
+                        // For translocation spells, scan for available audio files
+                        const availableFiles = [];
+                        const folderPath = `assets/audio/Translocation/${spell}`;
+                        
+                        // Try common naming patterns
+                        const possibleNames = [
+                            spell,
+                            spell.toLowerCase(),
+                            spell.replace(' ', '_'),
+                            spell.toLowerCase().replace(' ', '_'),
+                            spell.replace(' ', '-'),
+                            spell.toLowerCase().replace(' ', '-'),
+                            spell.replace(/\s+/g, ''),
+                            spell.toLowerCase().replace(/\s+/g, '')
+                        ];
+
+                        // Check for numbered variants (spell1.ogg, spell2.ogg, etc.)
+                        for (let i = 1; i <= 5; i++) {
+                            possibleNames.push(
+                                `${spell.toLowerCase().replace(' ', '_')}${i}`,
+                                `${spell.toLowerCase().replace(' ', '_')}_${i}`,
+                                `${spell.replace(' ', '_')}${i}`,
+                                `${spell.replace(' ', '_')}_${i}`
+                            );
+                        }
+
+                        // Test each combination
+                        for (const name of possibleNames) {
+                            for (const ext of extensions) {
+                                const filePath = `${folderPath}/${name}.${ext}`;
+                                if (await this.checkAudioFileExists(filePath)) {
+                                    availableFiles.push(filePath);
+                                }
+                            }
+                        }
+
+                        // If no files found, fall back to placeholder
+                        if (availableFiles.length === 0) {
+                            console.warn(`No audio files found for ${spellKey}, using placeholder`);
+                            this.spellAudioFiles.set(spellKey, placeholderAudio);
+                        } else {
+                            this.spellAudioFiles.set(spellKey, availableFiles);
+                            console.log(`Found ${availableFiles.length} audio files for ${spellKey}:`, availableFiles);
+                        }
+                    } else {
+                        // Use placeholder for other spells
+                        this.spellAudioFiles.set(spellKey, placeholderAudio);
+                    }
+                }
+            }
+
+            async checkAudioFileExists(filePath) {
+                try {
+                    const response = await fetch(filePath, { method: 'HEAD' });
+                    return response.ok;
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            selectRandomAudioFile(spellKey) {
+                const availableFiles = this.spellAudioFiles.get(spellKey);
+                if (!availableFiles || availableFiles.length === 0) {
+                    return null;
+                }
+
+                // If only one file, use it
+                if (availableFiles.length === 1) {
+                    return availableFiles[0];
+                }
+
+                // Get last played file for this spell
+                const lastPlayed = this.lastPlayedFiles.get(spellKey);
+                
+                // Filter out the last played file to avoid repetition
+                const availableChoices = lastPlayed ? 
+                    availableFiles.filter(file => file !== lastPlayed) : 
+                    availableFiles;
+
+                // If all files were filtered out (shouldn't happen with length > 1), use all
+                const choices = availableChoices.length > 0 ? availableChoices : availableFiles;
+                
+                // Select random file
+                const randomIndex = Math.floor(Math.random() * choices.length);
+                const selectedFile = choices[randomIndex];
+
+                // Track this as the last played
+                this.lastPlayedFiles.set(spellKey, selectedFile);
+
+                return selectedFile;
+            }
+
+            playSound(button) {
+                // If this button is already playing, stop it first
+                if (this.playingAudios.has(button)) {
+                    const existingAudio = this.playingAudios.get(button);
+                    existingAudio.pause();
+                    existingAudio.currentTime = 0;
+                    button.classList.remove('playing');
+                    this.playingAudios.delete(button);
+                }
+
+                // Get spell info
+                const school = button.dataset.school;
+                const spell = button.dataset.spell;
+                const spellKey = `${school}-${spell}`;
+
+                // Select random audio file for this spell
+                const soundFile = this.selectRandomAudioFile(spellKey);
+                if (!soundFile) {
+                    console.error('No audio files available for spell:', spellKey);
+                    return;
+                }
+
+                // Create new audio instance
+                const audio = new Audio(soundFile);
+                
+                // Add visual feedback
+                button.classList.add('playing');
+                
+                // Track this audio
+                this.playingAudios.set(button, audio);
+                
+                // Set up audio event listeners
+                audio.addEventListener('ended', () => {
+                    button.classList.remove('playing');
+                    this.playingAudios.delete(button);
+                });
+
+                audio.addEventListener('error', (e) => {
+                    console.error('Error playing audio:', e);
+                    button.classList.remove('playing');
+                    this.playingAudios.delete(button);
+                });
+
+                // Play the audio
+                audio.play().catch(error => {
+                    console.error('Error playing audio:', error);
+                    button.classList.remove('playing');
+                    this.playingAudios.delete(button);
+                });
+            }
+        }
+
+        // Initialize the soundboard when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            new ScrollsSoundboard();
+        });
+
+        // Handle window resize to maintain responsiveness
+        window.addEventListener('resize', () => {
+            // Force a reflow to ensure proper grid sizing
+            const container = document.getElementById('soundboard');
+            container.style.display = 'none';
+            container.offsetHeight; // Trigger reflow
+            container.style.display = 'grid';
+        });
+    </script>
+</body>
+</html> 
