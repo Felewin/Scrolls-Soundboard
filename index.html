@@ -51,13 +51,8 @@
             width: 100%;
             height: 100%;
             border: none;
-            border-radius: 50%;
+            border-radius: 0;
             background: linear-gradient(145deg, #f0f0f3, #cacaca);
-            box-shadow: 
-                12px 12px 24px #bebebe,
-                -12px -12px 24px #ffffff,
-                inset 2px 2px 5px rgba(255, 255, 255, 0.3),
-                inset -2px -2px 5px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -70,20 +65,10 @@
 
         .scroll-button:hover {
             transform: translateY(-2px);
-            box-shadow: 
-                16px 16px 32px #bebebe,
-                -16px -16px 32px #ffffff,
-                inset 2px 2px 8px rgba(255, 255, 255, 0.4),
-                inset -2px -2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .scroll-button:active {
             transform: translateY(1px);
-            box-shadow: 
-                8px 8px 16px #bebebe,
-                -8px -8px 16px #ffffff,
-                inset 4px 4px 8px rgba(0, 0, 0, 0.2),
-                inset -4px -4px 8px rgba(255, 255, 255, 0.2);
         }
 
         .scroll-button.playing {
@@ -100,18 +85,13 @@
             background: linear-gradient(145deg, #ff6b6b, #ee5a52);
             color: white;
             z-index: 1000;
-            border-radius: 50%;
+            border-radius: 0;
             min-height: 50px;
         }
 
         .stop-all-button:hover {
             background: linear-gradient(145deg, #ff5252, #e53935);
             transform: translateY(-2px);
-            box-shadow: 
-                8px 8px 16px #bebebe,
-                -8px -8px 16px #ffffff,
-                inset 2px 2px 8px rgba(255, 255, 255, 0.4),
-                inset -2px -2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .stop-all-button .scroll-title {
@@ -263,11 +243,11 @@
                     'electromancy': '⚡',
                     'pyromancy': '🔥',
                     'hydromancy': '💧',
-                    'druidry': '🌿',
-                    'chronomancy': '⏰',
+                    'druidry': '🍃',
+                    'chronomancy': '⏳',
                     'translocation': '🌀',
-                    'illusion': '🔮',
-                    'elevancy': '✨'
+                    'illusion': '👁‍🗨',
+                    'elevancy': '🤗'
                 };
                 
                 // Create 8 rows, each with 5 buttons for a magic school (40 total)
@@ -351,19 +331,6 @@
                 // For placeholder spells, use the old placeholder system
                 const placeholderAudio = ['assets/audio/placeholder.ogg'];
 
-                // Known audio files for Translocation spells based on actual directory contents
-                const translocationAudioFiles = {
-                    'Summon Relic': ['assets/audio/Translocation/Summon Relic/GO_Treasurechest_PA_GoldenDragon_Open.ogg'],
-                    'Ethereal Net': ['assets/audio/Translocation/Ethereal Net/SPELL_PR_Revamp_HolyNova_cast_01.ogg'],
-                    'Remanifestation': ['assets/audio/Translocation/Remanifestation/GO_7LF_Lightforged_CrownPedestalPurple01_Insert.ogg'],
-                    'Spatial Swap': ['assets/audio/Translocation/Spatial Swap/SPELL_TreasureGoblin_Teleports_Cast_01.ogg'],
-                    'Telekinesis': [
-                        'assets/audio/Translocation/Telekinesis/Spell_SpiritofChiJi_Cast_02.ogg',
-                        'assets/audio/Translocation/Telekinesis/Spell_SpiritofChiJi_Cast_04.ogg',
-                        'assets/audio/Translocation/Telekinesis/Spell_SpiritofChiJi_Cast_05.ogg'
-                    ]
-                };
-
                 // Populate spell audio files
                 for (const button of this.buttons) {
                     const school = button.dataset.school;
@@ -371,13 +338,15 @@
                     const spellKey = `${school}-${spell}`;
 
                     if (school === 'translocation' && spell !== 'Placeholder') {
-                        if (translocationAudioFiles[spell]) {
-                            // Use known audio files
-                            this.spellAudioFiles.set(spellKey, translocationAudioFiles[spell]);
-                            console.log(`Loaded ${translocationAudioFiles[spell].length} audio files for ${spellKey}`);
+                        // Dynamically scan for audio files in the spell's folder
+                        const folderPath = `assets/audio/Translocation/${spell}`;
+                        const discoveredFiles = await this.discoverAudioFilesInFolder(folderPath);
+                        
+                        if (discoveredFiles.length > 0) {
+                            this.spellAudioFiles.set(spellKey, discoveredFiles);
+                            console.log(`Discovered ${discoveredFiles.length} audio files for ${spellKey}:`, discoveredFiles);
                         } else {
-                            // Use placeholder for unknown spells
-                            console.warn(`No audio mapping found for ${spellKey}, using placeholder`);
+                            console.warn(`No audio files found for ${spellKey}, using placeholder`);
                             this.spellAudioFiles.set(spellKey, placeholderAudio);
                         }
                     } else {
@@ -387,33 +356,112 @@
                 }
             }
 
-            async autoDetectAudioFiles(folderPath) {
+            async discoverAudioFilesInFolder(folderPath) {
                 const extensions = ['ogg', 'mp3', 'wav'];
                 const availableFiles = [];
                 
-                // Try common file patterns
-                const patterns = [
-                    // Try numbered files
-                    ...Array.from({length: 10}, (_, i) => `${i + 1}`),
-                    // Try common prefixes
-                    'SPELL_', 'FX_', 'SFX_', 'AUDIO_', 'SOUND_',
-                    // Try the folder name variations
-                    folderPath.split('/').pop(),
-                    folderPath.split('/').pop().toLowerCase(),
-                    folderPath.split('/').pop().replace(' ', '_'),
-                    folderPath.split('/').pop().toLowerCase().replace(' ', '_')
+                // Generate comprehensive list of potential filenames
+                const potentialNames = new Set();
+                
+                // Common prefixes found in game audio files
+                const prefixes = [
+                    'SPELL_', 'FX_', 'SFX_', 'AUDIO_', 'SOUND_', 'GO_', 'UI_',
+                    'Spell_', 'Effect_', 'Cast_', 'Magic_', 'Audio_'
                 ];
-
-                for (const pattern of patterns) {
+                
+                // Common suffixes and patterns
+                const suffixes = [
+                    '_Cast', '_Impact', '_Loop', '_01', '_02', '_03', '_04', '_05',
+                    '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9', '_10',
+                    'Cast', 'Impact', 'Loop', '01', '02', '03', '04', '05'
+                ];
+                
+                // Base spell name variations
+                const spellName = folderPath.split('/').pop();
+                const nameVariations = [
+                    spellName,
+                    spellName.toLowerCase(),
+                    spellName.toUpperCase(),
+                    spellName.replace(/\s+/g, ''),
+                    spellName.replace(/\s+/g, '_'),
+                    spellName.replace(/\s+/g, '-'),
+                    spellName.toLowerCase().replace(/\s+/g, ''),
+                    spellName.toLowerCase().replace(/\s+/g, '_'),
+                    spellName.toLowerCase().replace(/\s+/g, '-'),
+                    spellName.toUpperCase().replace(/\s+/g, ''),
+                    spellName.toUpperCase().replace(/\s+/g, '_'),
+                    spellName.toUpperCase().replace(/\s+/g, '-')
+                ];
+                
+                // Add base name variations
+                nameVariations.forEach(name => potentialNames.add(name));
+                
+                // Add prefixed variations
+                prefixes.forEach(prefix => {
+                    nameVariations.forEach(name => {
+                        potentialNames.add(prefix + name);
+                        potentialNames.add(prefix + name.charAt(0).toUpperCase() + name.slice(1));
+                    });
+                });
+                
+                // Add suffixed variations
+                nameVariations.forEach(name => {
+                    suffixes.forEach(suffix => {
+                        potentialNames.add(name + suffix);
+                    });
+                });
+                
+                // Add prefix + suffix combinations
+                prefixes.forEach(prefix => {
+                    nameVariations.forEach(name => {
+                        suffixes.forEach(suffix => {
+                            potentialNames.add(prefix + name + suffix);
+                        });
+                    });
+                });
+                
+                // Try common patterns without spell name (found in actual files)
+                const commonPatterns = [
+                    'SpiritofChiJi_Cast_01', 'SpiritofChiJi_Cast_02', 'SpiritofChiJi_Cast_03', 
+                    'SpiritofChiJi_Cast_04', 'SpiritofChiJi_Cast_05', 'SpiritofChiJi_Cast_06',
+                    'TreasureGoblin_Portal_Appears_01', 'TreasureGoblin_Teleports_Cast_01',
+                    'PR_Revamp_HolyNova_cast_01', '7LF_Lightforged_CrownPedestalPurple01_Insert',
+                    'Treasurechest_PA_GoldenDragon_Open'
+                ];
+                
+                commonPatterns.forEach(pattern => {
+                    potentialNames.add('SPELL_' + pattern);
+                    potentialNames.add('GO_' + pattern);
+                    potentialNames.add('FX_' + pattern);
+                    potentialNames.add(pattern);
+                });
+                
+                // Test each potential filename with each extension
+                const testPromises = [];
+                for (const name of potentialNames) {
                     for (const ext of extensions) {
-                        const filePath = `${folderPath}/${pattern}.${ext}`;
-                        if (await this.checkAudioFileExists(filePath)) {
-                            availableFiles.push(filePath);
-                        }
+                        const filePath = `${folderPath}/${name}.${ext}`;
+                        testPromises.push(
+                            this.checkAudioFileExists(filePath).then(exists => ({
+                                path: filePath,
+                                exists: exists
+                            }))
+                        );
                     }
                 }
-
-                return availableFiles;
+                
+                // Wait for all tests to complete
+                const results = await Promise.all(testPromises);
+                
+                // Collect existing files
+                results.forEach(result => {
+                    if (result.exists) {
+                        availableFiles.push(result.path);
+                    }
+                });
+                
+                // Remove duplicates and sort
+                return [...new Set(availableFiles)].sort();
             }
 
             async checkAudioFileExists(filePath) {
