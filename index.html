@@ -110,6 +110,18 @@
             border: 3px solid #000000;
         }
 
+        /* Placeholder button styling */
+        .placeholder-dimmed {
+            opacity: 0.3;
+            filter: grayscale(70%);
+            cursor: not-allowed;
+        }
+
+        .placeholder-dimmed:hover {
+            transform: none;
+            opacity: 0.3;
+        }
+
         /* Magic school gradients */
         .electromancy {
             background: linear-gradient(90deg, #fbbf24, #f97316);
@@ -259,8 +271,13 @@
                     spells.forEach((spellName, i) => {
                         const button = document.createElement('button');
                         const isNovice = i === 0; // First button in each row is novice
+                        const isPlaceholder = spellName === 'Placeholder';
                         
-                        button.className = `scroll-button ${isNovice ? 'novice' : ''}`;
+                        let buttonClasses = 'scroll-button';
+                        if (isNovice) buttonClasses += ' novice';
+                        if (isPlaceholder) buttonClasses += ' placeholder-dimmed';
+                        
+                        button.className = buttonClasses;
                         button.dataset.school = school;
                         button.dataset.spell = spellName;
                         button.dataset.level = isNovice ? 'novice' : 'advanced';
