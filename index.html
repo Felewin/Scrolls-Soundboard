@@ -229,11 +229,11 @@
                 
                 // Magic schools and their spells
                 const schoolSpells = {
-                    'electromancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
-                    'pyromancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
-                    'hydromancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
-                    'druidry': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
-                    'chronomancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
+                    'electromancy': ['Thunderbolt', 'Electrical Port', 'Power Of Positivity', 'Titan Blast', 'Zapiphany'],
+                    'pyromancy': ['Torch', 'Burning Blast', 'Incinerate', 'Red Phoenix', 'Reforge'],
+                    'hydromancy': ['Plink', 'Bubble', 'Deluge', 'Flood Tower', 'Refill'],
+                    'druidry': ['Port Owl', 'Gopher A Scroll', 'Jacker Rabbit', 'Paint The Flowers', 'Talonted Owl'],
+                    'chronomancy': ['Timeshift', 'Blast From The Past', 'Ephemerality', 'Recall', 'Time To Choose'],
                     'translocation': ['Summon Relic', 'Ethereal Net', 'Remanifestation', 'Spatial Swap', 'Telekinesis'],
                     'illusion': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder'],
                     'elevancy': ['Placeholder', 'Placeholder', 'Placeholder', 'Placeholder', 'Placeholder']
@@ -331,20 +331,77 @@
                 // For placeholder spells, use the old placeholder system
                 const placeholderAudio = ['assets/audio/placeholder.ogg'];
 
-                // Hardcoded audio files for each Translocation spell based on actual directory contents
-                const translocationAudioFiles = {
-                    'Summon Relic': [
-                        'assets/audio/Translocation/Summon Relic/GO_Treasurechest_PA_GoldenDragon_Open.ogg'
+                // Hardcoded audio files for each spell based on actual directory contents
+                const spellAudioFiles = {
+                    // Electromancy
+                    'Thunderbolt': ['assets/audio/Electromancy/Thunderbolt/MonsoonLightningHit.wav'],
+                    'Electrical Port': ['assets/audio/Electromancy/Electrical Port/palaceTeleport.wav'],
+                    'Power Of Positivity': ['assets/audio/Electromancy/Power Of Positivity/SPELL_TreasureGoblin_Portal_Appears_01.ogg'],
+                    'Titan Blast': ['assets/audio/Electromancy/Titan Blast/ThunderClapCaster.wav'],
+                    'Zapiphany': ['assets/audio/Electromancy/Zapiphany/SPELL_DraeneiDefenseCrystal_Cast_05.ogg'],
+                    
+                    // Pyromancy
+                    'Torch': [
+                        'assets/audio/Pyromancy/Torch/FX_Fire_Magic_Cast_Small_01.ogg',
+                        'assets/audio/Pyromancy/Torch/FX_Fire_Magic_Cast_Small_02.ogg',
+                        'assets/audio/Pyromancy/Torch/FX_Fire_Magic_Cast_Small_03.ogg',
+                        'assets/audio/Pyromancy/Torch/FX_Fire_Magic_Cast_Small_04.ogg',
+                        'assets/audio/Pyromancy/Torch/FX_Fire_Magic_Cast_Small_05.ogg',
+                        'assets/audio/Pyromancy/Torch/FX_Fire_Magic_Cast_Small_06.ogg'
                     ],
-                    'Ethereal Net': [
-                        'assets/audio/Translocation/Ethereal Net/SPELL_PR_Revamp_HolyNova_cast_01.ogg'
+                    'Burning Blast': ['assets/audio/Pyromancy/Burning Blast/BigFlame.ogg'],
+                    'Incinerate': ['assets/audio/Pyromancy/Incinerate/Incinerate1.wav'],
+                    'Red Phoenix': [
+                        'assets/audio/Pyromancy/Red Phoenix/SPELL_MA_Artifact_Phoenix_Flames_Cast_01.ogg',
+                        'assets/audio/Pyromancy/Red Phoenix/SPELL_MA_Artifact_Phoenix_Flames_Cast_02.ogg'
                     ],
-                    'Remanifestation': [
-                        'assets/audio/Translocation/Remanifestation/GO_7LF_Lightforged_CrownPedestalPurple01_Insert.ogg'
+                    'Reforge': ['assets/audio/Pyromancy/Reforge/repair.wav'],
+                    
+                    // Hydromancy
+                    'Plink': [
+                        'assets/audio/Hydromancy/Plink/Water_CaveDrip1.wav',
+                        'assets/audio/Hydromancy/Plink/Water_CaveDrip2.wav',
+                        'assets/audio/Hydromancy/Plink/Water_CaveDrip3.wav',
+                        'assets/audio/Hydromancy/Plink/Water_CaveDrip4.wav',
+                        'assets/audio/Hydromancy/Plink/Water_CaveDrip5.wav',
+                        'assets/audio/Hydromancy/Plink/Water_CaveDrip6.wav'
                     ],
-                    'Spatial Swap': [
-                        'assets/audio/Translocation/Spatial Swap/SPELL_TreasureGoblin_Teleports_Cast_01.ogg'
+                    'Bubble': ['assets/audio/Hydromancy/Bubble/bubbles - edited.mp3'],
+                    'Deluge': ['assets/audio/Hydromancy/Deluge/rain_heavy_001 - cropped.mp3'],
+                    'Flood Tower': [
+                        'assets/audio/Hydromancy/Flood Tower/FX_Amber_ExplosionHeavy06.ogg',
+                        'assets/audio/Hydromancy/Flood Tower/FX_Amber_ExplosionHeavy08.ogg'
                     ],
+                    'Refill': [
+                        'assets/audio/Hydromancy/Refill/Liquids Pouring In Glass.mp3',
+                        'assets/audio/Hydromancy/Refill/WakeyWakey,tea,chai,kitchen,fullyprepared,pouring,mugtopot,liquid,fillup,aerate,alt.wav'
+                    ],
+                    
+                    // Druidry
+                    'Port Owl': ['assets/audio/Druidry/Port Owl/ScoutLaunchBirth1.wav'],
+                    'Gopher A Scroll': ['assets/audio/Druidry/Gopher A Scroll/Mon_Hyena_V2_Scratch.ogg'],
+                    'Jacker Rabbit': ['assets/audio/Druidry/Jacker Rabbit/10.0.ogg'],
+                    'Paint The Flowers': ['assets/audio/Druidry/Paint The Flowers/MUS_FlowerAura_EU_01.mp3'],
+                    'Talonted Owl': ['assets/audio/Druidry/Talonted Owl/ScoutLaunchDeath1.wav'],
+                    
+                    // Chronomancy
+                    'Timeshift': ['assets/audio/Chronomancy/Timeshift/ManaPotion.wav'],
+                    'Blast From The Past': [
+                        'assets/audio/Chronomancy/Blast From The Past/PET_TreasureGoblinPet_Death_Impact_01.ogg',
+                        'assets/audio/Chronomancy/Blast From The Past/PET_TreasureGoblinPet_Death_Impact_02.ogg',
+                        'assets/audio/Chronomancy/Blast From The Past/PET_TreasureGoblinPet_Death_Impact_03.ogg',
+                        'assets/audio/Chronomancy/Blast From The Past/PET_TreasureGoblinPet_Death_Impact_04.ogg',
+                        'assets/audio/Chronomancy/Blast From The Past/PET_TreasureGoblinPet_Death_Impact_05.ogg'
+                    ],
+                    'Ephemerality': ['assets/audio/Chronomancy/Ephemerality/SPELL_TownPortal_Diablo_Spawn.ogg'],
+                    'Recall': ['assets/audio/Chronomancy/Recall/SoulGem.wav'],
+                    'Time To Choose': ['assets/audio/Chronomancy/Time To Choose/questcomplete.wav'],
+                    
+                    // Translocation
+                    'Summon Relic': ['assets/audio/Translocation/Summon Relic/GO_Treasurechest_PA_GoldenDragon_Open.ogg'],
+                    'Ethereal Net': ['assets/audio/Translocation/Ethereal Net/SPELL_PR_Revamp_HolyNova_cast_01.ogg'],
+                    'Remanifestation': ['assets/audio/Translocation/Remanifestation/GO_7LF_Lightforged_CrownPedestalPurple01_Insert.ogg'],
+                    'Spatial Swap': ['assets/audio/Translocation/Spatial Swap/SPELL_TreasureGoblin_Teleports_Cast_01.ogg'],
                     'Telekinesis': [
                         'assets/audio/Translocation/Telekinesis/Spell_SpiritofChiJi_Cast_02.ogg',
                         'assets/audio/Translocation/Telekinesis/Spell_SpiritofChiJi_Cast_04.ogg',
@@ -358,17 +415,16 @@
                     const spell = button.dataset.spell;
                     const spellKey = `${school}-${spell}`;
 
-                    if (school === 'translocation' && spell !== 'Placeholder') {
-                        if (translocationAudioFiles[spell]) {
-                            this.spellAudioFiles.set(spellKey, translocationAudioFiles[spell]);
-                            console.log(`Loaded ${translocationAudioFiles[spell].length} audio files for ${spellKey}`);
-                        } else {
-                            console.warn(`No audio mapping found for ${spellKey}, using placeholder`);
-                            this.spellAudioFiles.set(spellKey, placeholderAudio);
-                        }
+                    if (spell !== 'Placeholder' && spellAudioFiles[spell]) {
+                        // Use mapped audio files for real spells
+                        this.spellAudioFiles.set(spellKey, spellAudioFiles[spell]);
+                        console.log(`Loaded ${spellAudioFiles[spell].length} audio files for ${spellKey}`);
                     } else {
-                        // Use placeholder for other spells
+                        // Use placeholder for unmapped spells
                         this.spellAudioFiles.set(spellKey, placeholderAudio);
+                        if (spell !== 'Placeholder') {
+                            console.warn(`No audio mapping found for ${spellKey}, using placeholder`);
+                        }
                     }
                 }
             }
