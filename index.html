@@ -348,11 +348,21 @@
             }
 
             async scanAudioFiles() {
-                // Audio file extensions to check
-                const extensions = ['ogg', 'mp3', 'wav'];
-                
                 // For placeholder spells, use the old placeholder system
                 const placeholderAudio = ['assets/audio/placeholder.ogg'];
+
+                // Known audio files for Translocation spells based on actual directory contents
+                const translocationAudioFiles = {
+                    'Summon Relic': ['assets/audio/Translocation/Summon Relic/GO_Treasurechest_PA_GoldenDragon_Open.ogg'],
+                    'Ethereal Net': ['assets/audio/Translocation/Ethereal Net/SPELL_PR_Revamp_HolyNova_cast_01.ogg'],
+                    'Remanifestation': ['assets/audio/Translocation/Remanifestation/GO_7LF_Lightforged_CrownPedestalPurple01_Insert.ogg'],
+                    'Spatial Swap': ['assets/audio/Translocation/Spatial Swap/SPELL_TreasureGoblin_Teleports_Cast_01.ogg'],
+                    'Telekinesis': [
+                        'assets/audio/Translocation/Telekinesis/Spell_SpiritofChiJi_Cast_02.ogg',
+                        'assets/audio/Translocation/Telekinesis/Spell_SpiritofChiJi_Cast_04.ogg',
+                        'assets/audio/Translocation/Telekinesis/Spell_SpiritofChiJi_Cast_05.ogg'
+                    ]
+                };
 
                 // Populate spell audio files
                 for (const button of this.buttons) {
@@ -361,55 +371,49 @@
                     const spellKey = `${school}-${spell}`;
 
                     if (school === 'translocation' && spell !== 'Placeholder') {
-                        // For translocation spells, scan for available audio files
-                        const availableFiles = [];
-                        const folderPath = `assets/audio/Translocation/${spell}`;
-                        
-                        // Try common naming patterns
-                        const possibleNames = [
-                            spell,
-                            spell.toLowerCase(),
-                            spell.replace(' ', '_'),
-                            spell.toLowerCase().replace(' ', '_'),
-                            spell.replace(' ', '-'),
-                            spell.toLowerCase().replace(' ', '-'),
-                            spell.replace(/\s+/g, ''),
-                            spell.toLowerCase().replace(/\s+/g, '')
-                        ];
-
-                        // Check for numbered variants (spell1.ogg, spell2.ogg, etc.)
-                        for (let i = 1; i <= 5; i++) {
-                            possibleNames.push(
-                                `${spell.toLowerCase().replace(' ', '_')}${i}`,
-                                `${spell.toLowerCase().replace(' ', '_')}_${i}`,
-                                `${spell.replace(' ', '_')}${i}`,
-                                `${spell.replace(' ', '_')}_${i}`
-                            );
-                        }
-
-                        // Test each combination
-                        for (const name of possibleNames) {
-                            for (const ext of extensions) {
-                                const filePath = `${folderPath}/${name}.${ext}`;
-                                if (await this.checkAudioFileExists(filePath)) {
-                                    availableFiles.push(filePath);
-                                }
-                            }
-                        }
-
-                        // If no files found, fall back to placeholder
-                        if (availableFiles.length === 0) {
-                            console.warn(`No audio files found for ${spellKey}, using placeholder`);
-                            this.spellAudioFiles.set(spellKey, placeholderAudio);
+                        if (translocationAudioFiles[spell]) {
+                            // Use known audio files
+                            this.spellAudioFiles.set(spellKey, translocationAudioFiles[spell]);
+                            console.log(`Loaded ${translocationAudioFiles[spell].length} audio files for ${spellKey}`);
                         } else {
-                            this.spellAudioFiles.set(spellKey, availableFiles);
-                            console.log(`Found ${availableFiles.length} audio files for ${spellKey}:`, availableFiles);
+                            // Use placeholder for unknown spells
+                            console.warn(`No audio mapping found for ${spellKey}, using placeholder`);
+                            this.spellAudioFiles.set(spellKey, placeholderAudio);
                         }
                     } else {
                         // Use placeholder for other spells
                         this.spellAudioFiles.set(spellKey, placeholderAudio);
                     }
                 }
+            }
+
+            async autoDetectAudioFiles(folderPath) {
+                const extensions = ['ogg', 'mp3', 'wav'];
+                const availableFiles = [];
+                
+                // Try common file patterns
+                const patterns = [
+                    // Try numbered files
+                    ...Array.from({length: 10}, (_, i) => `${i + 1}`),
+                    // Try common prefixes
+                    'SPELL_', 'FX_', 'SFX_', 'AUDIO_', 'SOUND_',
+                    // Try the folder name variations
+                    folderPath.split('/').pop(),
+                    folderPath.split('/').pop().toLowerCase(),
+                    folderPath.split('/').pop().replace(' ', '_'),
+                    folderPath.split('/').pop().toLowerCase().replace(' ', '_')
+                ];
+
+                for (const pattern of patterns) {
+                    for (const ext of extensions) {
+                        const filePath = `${folderPath}/${pattern}.${ext}`;
+                        if (await this.checkAudioFileExists(filePath)) {
+                            availableFiles.push(filePath);
+                        }
+                    }
+                }
+
+                return availableFiles;
             }
 
             async checkAudioFileExists(filePath) {
