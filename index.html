@@ -52,7 +52,6 @@
             height: 100%;
             border: none;
             border-radius: 0;
-            background: linear-gradient(145deg, #f0f0f3, #cacaca);
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -74,6 +73,8 @@
         .scroll-button.playing {
             background: linear-gradient(145deg, #ff9a9e, #fecfef);
             animation: pulse 1s infinite;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
         }
 
         .stop-all-button {
@@ -122,37 +123,70 @@
             opacity: 0.3;
         }
 
-        /* Magic school gradients */
-        .electromancy {
+        /* Magic school gradients for rows */
+        .magic-row.electromancy {
             background: linear-gradient(90deg, #fbbf24, #f97316);
         }
 
-        .pyromancy {
+        .magic-row.pyromancy {
             background: linear-gradient(90deg, #ef4444, #f97316);
         }
 
-        .hydromancy {
+        .magic-row.hydromancy {
             background: linear-gradient(90deg, #0ea5e9, #06b6d4);
         }
 
-        .druidry {
+        .magic-row.druidry {
             background: linear-gradient(90deg, #22c55e, #84cc16);
         }
 
-        .chronomancy {
+        .magic-row.chronomancy {
             background: linear-gradient(90deg, #c0c0c0, #4a4a4a);
         }
 
-        .translocation {
+        .magic-row.translocation {
             background: linear-gradient(90deg, #fce7f3, #be185d);
         }
 
-        .illusion {
+        .magic-row.illusion {
             background: linear-gradient(90deg, #ddd6fe, #7c3aed);
         }
 
-        .elevancy {
+        .magic-row.elevancy {
             background: linear-gradient(90deg, #fbbf24, #f472b6);
+        }
+
+        /* Magic school gradients for buttons */
+        .scroll-button.electromancy {
+            background: linear-gradient(145deg, #fbbf24, #f97316);
+        }
+
+        .scroll-button.pyromancy {
+            background: linear-gradient(145deg, #ef4444, #f97316);
+        }
+
+        .scroll-button.hydromancy {
+            background: linear-gradient(145deg, #0ea5e9, #06b6d4);
+        }
+
+        .scroll-button.druidry {
+            background: linear-gradient(145deg, #22c55e, #84cc16);
+        }
+
+        .scroll-button.chronomancy {
+            background: linear-gradient(145deg, #c0c0c0, #4a4a4a);
+        }
+
+        .scroll-button.translocation {
+            background: linear-gradient(145deg, #fce7f3, #be185d);
+        }
+
+        .scroll-button.illusion {
+            background: linear-gradient(145deg, #ddd6fe, #7c3aed);
+        }
+
+        .scroll-button.elevancy {
+            background: linear-gradient(145deg, #fbbf24, #f472b6);
         }
 
         @keyframes pulse {
@@ -273,7 +307,7 @@
                         const isNovice = i === 0; // First button in each row is novice
                         const isPlaceholder = spellName === 'Placeholder';
                         
-                        let buttonClasses = 'scroll-button';
+                        let buttonClasses = `scroll-button ${school}`;
                         if (isNovice) buttonClasses += ' novice';
                         if (isPlaceholder) buttonClasses += ' placeholder-dimmed';
                         
