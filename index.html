@@ -309,6 +309,35 @@
             }
         }
 
+        /* Ultra-aggressive mobile fix for all small screens */
+        @media (max-width: 900px) and (max-height: 1000px) {
+            .soundboard-container {
+                height: 100vh !important;
+                max-height: 100vh !important;
+                padding: 0px !important;
+                gap: 2px !important;
+            }
+            
+            .magic-row {
+                gap: 2px !important;
+                min-height: 0 !important;
+                height: calc((100vh - 16px) / 9) !important;
+                max-height: calc((100vh - 16px) / 9) !important;
+            }
+            
+            .scroll-button {
+                height: 100% !important;
+                max-height: 100% !important;
+                min-height: 0 !important;
+            }
+            
+            .scroll-title {
+                font-size: clamp(11px, 2.5vw, 14px) !important;
+                line-height: 1.2 !important;
+                padding: 2px !important;
+            }
+        }
+
         /* Ensure grid fits within viewport on short screens */
         @media (max-height: 700px) {
             .soundboard-container {
