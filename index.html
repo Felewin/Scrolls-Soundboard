@@ -258,22 +258,54 @@
         @media (max-width: 768px) {
             .soundboard-container {
                 padding: 0px 3px 3px 3px;
-                gap: 3px;
+                gap: 2px;
             }
             
             .magic-row {
-                gap: 3px;
+                gap: 2px;
+            }
+            
+            .scroll-title {
+                font-size: clamp(10px, 1.8vw, 14px);
+                line-height: 1.1;
             }
         }
 
         @media (max-width: 480px) {
             .soundboard-container {
-                padding: 0px 2px 2px 2px;
-                gap: 2px;
+                padding: 0px 1px 0px 1px;
+                gap: 1px;
+                height: 100vh;
+                max-height: 100vh;
             }
             
             .magic-row {
-                gap: 2px;
+                gap: 1px;
+                min-height: 0;
+            }
+            
+            .scroll-button {
+                min-height: 35px;
+                max-height: calc((100vh - 20px) / 9);
+            }
+            
+            .scroll-title {
+                font-size: clamp(7px, 1.2vw, 10px);
+                line-height: 0.9;
+                padding: 2px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .scroll-button {
+                min-height: 30px;
+                max-height: calc((100vh - 15px) / 9);
+            }
+            
+            .scroll-title {
+                font-size: clamp(6px, 1vw, 9px);
+                line-height: 0.8;
+                padding: 1px;
             }
         }
 
