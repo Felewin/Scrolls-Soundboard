@@ -30,7 +30,7 @@
             width: 100%;
             height: 100vh;
             display: grid;
-            grid-template-rows: repeat(8, 1fr);
+            grid-template-rows: repeat(9, 1fr);
             gap: 6px;
             padding: 10px 20px 10px 45px; /* Left padding for stop button in margin */
             max-width: 100vw;
@@ -45,6 +45,10 @@
             gap: 8px;
             width: 100%;
             height: 100%;
+        }
+
+        .magic-row.general {
+            grid-template-columns: repeat(8, 1fr);
         }
 
         .scroll-button {
@@ -152,6 +156,10 @@
             background: linear-gradient(90deg, #fbbf24, #f472b6);
         }
 
+        .magic-row.general {
+            background: white;
+        }
+
         /* Magic school gradients for buttons */
         .scroll-button.electromancy {
             background: linear-gradient(145deg, #fbbf24, #f97316);
@@ -183,6 +191,10 @@
 
         .scroll-button.elevancy {
             background: linear-gradient(145deg, #fbbf24, #f472b6);
+        }
+
+        .scroll-button.general {
+            background: white;
         }
 
         @keyframes pulse {
@@ -288,7 +300,8 @@
                     'chronomancy': ['Timeshift', 'Blast From The Past', 'Ephemerality', 'Recall', 'Time To Choose'],
                     'translocation': ['Summon Relic', 'Ethereal Net', 'Remanifestation', 'Spatial Swap', 'Telekinesis'],
                     'illusion': ['Blur', 'Pickpocket', 'Shifting Selection', 'Silence', 'Trance Mutation'],
-                    'elevancy': ['Placeholder', 'Congratulation', 'Elevatio', 'Joyblast', 'Ning']
+                    'elevancy': ['Placeholder', 'Congratulation', 'Elevatio', 'Joyblast', 'Ning'],
+                    'general': ['Artifact Discovery', 'Bow Launch', 'Chest Opening', 'Drink Potion', 'Equip Item', 'Loot', 'Unbag', 'Void']
                 };
 
                 const schoolEmojis = {
@@ -302,7 +315,7 @@
                     'elevancy': '🤗'
                 };
                 
-                // Create 8 rows, each with 5 buttons for a magic school (40 total)
+                // Create 9 rows (8 magic schools with 5 buttons each + 1 general row with 8 buttons, 48 total)
                 Object.entries(schoolSpells).forEach(([school, spells]) => {
                     const row = document.createElement('div');
                     row.className = `magic-row ${school}`;
@@ -322,7 +335,7 @@
                         button.dataset.spell = spellName;
                         button.dataset.level = isNovice ? 'novice' : 'advanced';
                         
-                        const displayName = isNovice ? `${schoolEmojis[school]} ${spellName}` : spellName;
+                        const displayName = (isNovice && school !== 'general') ? `${schoolEmojis[school]} ${spellName}` : spellName;
                         
                         button.innerHTML = `
                             <div class="scroll-title">${displayName}</div>
@@ -406,7 +419,10 @@
                         'assets/audio/Pyromancy/Torch/FX_Fire_Magic_Cast_Small_05.ogg',
                         'assets/audio/Pyromancy/Torch/FX_Fire_Magic_Cast_Small_06.ogg'
                     ],
-                    'Burning Blast': ['assets/audio/Pyromancy/Burning Blast/BigFlame.ogg'],
+                    'Burning Blast': [
+                        'assets/audio/Pyromancy/Burning Blast/BigFlame.ogg',
+                        'assets/audio/Pyromancy/Burning Blast/mag_fireball_stereo.wav'
+                    ],
                     'Incinerate': ['assets/audio/Pyromancy/Incinerate/Incinerate1.wav'],
                     'Red Phoenix': [
                         'assets/audio/Pyromancy/Red Phoenix/SPELL_MA_Artifact_Phoenix_Flames_Cast_01.ogg',
@@ -472,7 +488,39 @@
                     'Congratulation': ['assets/audio/Elevancy/Congratulation/UI_OrderHall_Talent_Ready_Check.ogg'],
                     'Elevatio': ['assets/audio/Elevancy/Elevatio/DivineShield.wav'],
                     'Joyblast': ['assets/audio/Elevancy/Joyblast/UI_OrderHall_Talent_Ready_Toast.ogg'],
-                    'Ning': ['assets/audio/Elevancy/Ning/ResurrectTarget & St. Finnikin - Alchemy.mp3']
+                    'Ning': ['assets/audio/Elevancy/Ning/ResurrectTarget & St. Finnikin - Alchemy.mp3'],
+                    
+                    // General
+                    'Artifact Discovery': ['assets/audio/general/Artifact Discovery/dropamulet.wav'],
+                    'Bow Launch': [
+                        'assets/audio/general/Bow Launch/bowlaunch1.wav',
+                        'assets/audio/general/Bow Launch/bowlaunch2.wav',
+                        'assets/audio/general/Bow Launch/bowlaunch3.wav',
+                        'assets/audio/general/Bow Launch/bowlaunch4.wav',
+                        'assets/audio/general/Bow Launch/bowlaunch5.wav'
+                    ],
+                    'Drink Potion': [
+                        'assets/audio/general/Drink Potion/itm_potionuse_01.wav',
+                        'assets/audio/general/Drink Potion/itm_potionuse_02.wav'
+                    ],
+                    'Equip Item': [
+                        'assets/audio/general/Equip Item/itm_weapon_up_001.wav',
+                        'assets/audio/general/Equip Item/itm_weapon_up_002.wav'
+                    ],
+                    'Chest Opening': ['assets/audio/general/Chest Opening/chestopen1.wav'],
+                    'Loot': [
+                        'assets/audio/general/Loot/ui_skills_glow_01.wav',
+                        'assets/audio/general/Loot/ui_skills_glow_02.wav',
+                        'assets/audio/general/Loot/ui_skills_glow_03.wav',
+                        'assets/audio/general/Loot/ui_skills_glow_04.wav'
+                    ],
+                    'Unbag': [
+                        'assets/audio/general/Unbag/GuildBankOpenBag1.ogg',
+                        'assets/audio/general/Unbag/GuildBankOpenBag2.ogg',
+                        'assets/audio/general/Unbag/GuildBankOpenBag3.ogg',
+                        'assets/audio/general/Unbag/GuildBankOpenBag4.ogg'
+                    ],
+                    'Void': ['assets/audio/general/Void/palaceTeleport.wav']
                 };
 
                 // Populate spell audio files
